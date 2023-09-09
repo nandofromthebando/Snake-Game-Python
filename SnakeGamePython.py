@@ -25,10 +25,49 @@ score = 0
 ESC = 27
 key = curses.KEY_RIGHT
 
+#implementation of level changes 
+levels = [
+    {"name": "Easy", "speed": 200, "obstacles": [(5, 5), (10, 15)], "target_length": 5},
+    {"name": "Medium", "speed": 150, "obstacles": [(8, 8), (12, 12)], "target_length": 10},
+    {"name": "Hard", "speed": 100, "obstacles": [(5, 15), (10, 5)], "target_length": 15},
+] 
+#intitialize
+current_level = 0
+level = levels[current_level]
+difficulty = level["name"]
+win.timeout(level["speed"])
+target_length = level["target_length"]
+obstacles = level["obstacles"]
 
 while key != ESC:
+    # Display current difficulty level and target length
+    win.addstr(0, 2, 'Level: ' + difficulty)
+    win.addstr(1, 2, 'Target Length: ' + str(target_length))
+    win.addstr(2, 2, 'Score: ' + str(score))  # Display the score separately
 
-    win.addstr(0, 2, 'Score' + ' ' + str(score))
+    # Adjust game speed based on difficulty
+    if difficulty == 'easy':
+        win.timeout(200)
+    elif difficulty == 'medium':
+        win.timeout(150)
+    elif difficulty == 'hard':
+        win.timeout(100)
+
+    # ...
+
+    # Check if snake's length reaches the target for the current level
+    if len(snake) >= target_length:
+        if current_level < len(levels) - 1:
+            current_level += 1
+            level = levels[current_level]
+            difficulty = level["name"]
+            target_length = level["target_length"]
+            obstacles = level["obstacles"]
+            win.timeout(level["speed"])  # Adjust the game speed for the new level
+        else:
+            # You've completed all levels (end of the game)
+            break
+        
     win.timeout(150 - (len(snake)) // 5 + len(snake)//10 % 120) #THis function adjust speed
 
     prev_key = key
