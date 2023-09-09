@@ -20,6 +20,11 @@ win.addch(food[0], food[1], '$')
 #game logic
 score = 0
 
+def check_obstacle_collision(snake, obstacles):
+    head = snake[0]
+    if head in obstacles:
+        return True
+    return False
 
 #esc key is defined as key 27
 ESC = 27
@@ -27,10 +32,11 @@ key = curses.KEY_RIGHT
 
 #implementation of level changes 
 levels = [
-    {"name": "Easy", "speed": 200, "obstacles": [(5, 5), (10, 15)], "target_length": 5},
-    {"name": "Medium", "speed": 150, "obstacles": [(8, 8), (12, 12)], "target_length": 10},
-    {"name": "Hard", "speed": 100, "obstacles": [(5, 15), (10, 5)], "target_length": 15},
-] 
+    {"name": "Easy", "speed": 200, "obstacles": [[(5, 5), (5, 6), (5, 7)], [(10, 15), (10, 16), (10, 17)]], "target_length": 5},
+    {"name": "Medium", "speed": 150, "obstacles": [[(8, 8), (8, 9)], [(12, 12), (12, 13), (12, 14)], [(5, 15), (5, 16)]], "target_length": 10},
+    {"name": "Hard", "speed": 100, "obstacles": [[(5, 15), (5, 16), (5, 17)], [(10, 5), (10, 6), (10, 7)], [(7, 7), (7, 8), (7, 9)]], "target_length": 15},
+]
+
 #intitialize
 current_level = 0
 level = levels[current_level]
@@ -53,9 +59,18 @@ while key != ESC:
     elif difficulty == 'hard':
         win.timeout(100)
 
-    for obstacle in obstacles:
-        y, x = obstacle
-        win.addch(y, x, '#')
+    for cluster in obstacles:
+        for obstacle in cluster:
+            y, x = obstacle
+            win.addch(y, x, '#')
+
+    if check_obstacle_collision(snake, cluster):
+        # Handle collision with obstacles 
+        if len(snake) > 1:
+            snake.pop()  # Remove the last segment of the snake
+        else:
+            # Snake has only one segment, game over logic can be added here
+            break
 
     # Check if snake's length reaches the target for the current level
     if len(snake) >= target_length:
