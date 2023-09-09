@@ -53,7 +53,9 @@ while key != ESC:
     elif difficulty == 'hard':
         win.timeout(100)
 
-    # ...
+    for obstacle in obstacles:
+        y, x = obstacle
+        win.addch(y, x, '#')
 
     # Check if snake's length reaches the target for the current level
     if len(snake) >= target_length:
@@ -67,7 +69,7 @@ while key != ESC:
         else:
             # You've completed all levels (end of the game)
             break
-        
+
     win.timeout(150 - (len(snake)) // 5 + len(snake)//10 % 120) #THis function adjust speed
 
     prev_key = key
